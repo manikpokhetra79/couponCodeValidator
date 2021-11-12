@@ -6,11 +6,11 @@ const couponSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    creation: {
+    creationDate: {
       type: Date,
       required: true,
     },
-    expiration: {
+    expirationDate: {
       type: Date,
       required: true,
     },
@@ -38,3 +38,6 @@ const couponSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+const Coupon = mongoose.model('Coupon', couponSchema);
+module.exports = Coupon;
