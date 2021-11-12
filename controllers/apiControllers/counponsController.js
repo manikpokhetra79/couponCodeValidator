@@ -53,8 +53,8 @@ module.exports.validateCoupon = async (req, res) => {
   try {
     let code = req.body.couponcode.toUpperCase();
     let newCoupon = await Coupon.findOne({ name: code });
+    console.log(newCoupon);
     let today = new Date();
-    let expirationDate = new Date(newCoupon.expirationDate);
     let currentCartValue = req.body.cartValue;
     if (!newCoupon) {
       return res.status(422).json({
@@ -64,6 +64,7 @@ module.exports.validateCoupon = async (req, res) => {
       // if coupon exists
       // conditions when coupon won't work
       // when coupon is past expiration date
+      let expirationDate = new Date(newCoupon.expirationDate);
       if (today.getTime() > expirationDate.getTime()) {
         return res.status(422).json({
           message: 'coupon code past expiration date',
@@ -110,4 +111,18 @@ module.exports.validateCoupon = async (req, res) => {
     });
   }
 };
-// module.exports.listCoupons = (req, res) => {};
+module.exports.listCoupons = async (req, res) => {
+  try {
+    let coupons = await Coupon.find();
+    console.log(coupons);
+    return res.status(200).json({
+      message: 'coupons fetched successfully',
+      coupons,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error while validating coupon',
+      error,
+    });
+  }
+};
