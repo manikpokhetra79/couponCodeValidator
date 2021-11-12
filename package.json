@@ -1,0 +1,16 @@
+{
+  "name": "couponcodeserver",
+  "version": "1.0.0",
+  "description": "counpon codes generator and validator application backend server",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "manik pokhetra",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.12"
+  }
+}
