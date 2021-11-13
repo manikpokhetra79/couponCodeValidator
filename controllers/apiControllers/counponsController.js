@@ -2,10 +2,13 @@ let Coupon = require('../../models/couponsSchema');
 
 module.exports.createCoupon = async (req, res) => {
   try {
-    let name = req.body.name.toUpperCase();
+    let formData = req.body.formdata;
+    console.log(formData);
+    let name = formData.name.toUpperCase();
     // console.log('inhere try');
     let newCoupon = await Coupon.findOne({ name });
     let today = new Date();
+
     // let date = today.getDate();
     if (newCoupon) {
       // coupon already exists
@@ -15,25 +18,33 @@ module.exports.createCoupon = async (req, res) => {
         coupon: newCoupon,
       });
     } else {
+      let expiry = new Date(formData.expiryDate);
+
+      // if coupon date is entered wrong
+      if (expiry.getTime() <= today.getTime()) {
+        return res.status(422).json({
+          message: 'Enter Correct expiry date',
+        });
+      }
       // create a new coupon
-      if (req.body.couponType === 'flat') {
+      if (formData.couponType === 'flat') {
         newCoupon = await Coupon.create({
           name: name,
           creationDate: today,
-          expirationDate: req.body.expiryDate,
-          minCartAmount: req.body.minCartAmount,
-          couponType: req.body.couponType,
-          flatAmount: req.body.flatAmount,
+          expirationDate: expiry,
+          minCartAmount: formData.minCartAmount,
+          couponType: formData.couponType,
+          flatAmount: formData.flatAmount,
         });
       } else {
         newCoupon = await Coupon.create({
           name: name,
           creationDate: today,
-          expirationDate: req.body.expiryDate,
-          minCartAmount: req.body.minCartAmount,
-          couponType: req.body.couponType,
-          percentValue: req.body.percentValue,
-          percentMaxDiscount: req.body.maxDiscount,
+          expirationDate: formData.expiryDate,
+          minCartAmount: formData.minCartAmount,
+          couponType: formData.couponType,
+          percentValue: formData.percentValue,
+          percentMaxDiscount: formData.maxDiscount,
         });
       }
       return res.status(200).json({
