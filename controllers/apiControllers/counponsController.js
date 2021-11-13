@@ -14,7 +14,10 @@ module.exports.createCoupon = async (req, res) => {
         message: 'enter correct values',
       });
     }
-    if (formData.flatAmount > formData.minCartAmount) {
+    if (
+      formData.minCartAmount < parseInt(formData.flatAmount) ||
+      formData.minCartAmount < parseInt(formData.maxDiscount)
+    ) {
       return res.status(422).json({
         message: 'Minimum cart value must be greater than discounts',
       });
