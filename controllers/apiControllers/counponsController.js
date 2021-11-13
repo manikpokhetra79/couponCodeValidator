@@ -3,7 +3,25 @@ let Coupon = require('../../models/couponsSchema');
 module.exports.createCoupon = async (req, res) => {
   try {
     let formData = req.body.formdata;
-    console.log(formData);
+    // if any value is less than or equal to zero, send error
+    if (
+      formData.minCartAmount <= 0 ||
+      formData.flatAmount <= 0 ||
+      formData.percentValue <= 0 ||
+      formData.maxDiscount <= 0
+    ) {
+      return res.status(422).json({
+        message: 'enter correct values',
+      });
+    }
+    if (
+      formData.minCartAmount < formData.flatAmount ||
+      formData.minCartAmount < formData.maxDiscount
+    ) {
+      return res.status(422).json({
+        message: 'Minimum cart value must be greater than discounts',
+      });
+    }
     let name = formData.name.toUpperCase();
     // console.log('inhere try');
     let newCoupon = await Coupon.findOne({ name });
@@ -49,6 +67,7 @@ module.exports.createCoupon = async (req, res) => {
       }
       return res.status(200).json({
         message: 'Coupon successfully created',
+        status: 'success',
         coupon: newCoupon,
       });
     }
@@ -70,6 +89,7 @@ module.exports.validateCoupon = async (req, res) => {
     if (!newCoupon) {
       return res.status(422).json({
         message: 'Invalid Coupon code',
+        status: 'error',
       });
     } else {
       // if coupon exists
@@ -97,6 +117,7 @@ module.exports.validateCoupon = async (req, res) => {
             message: 'coupon code applied successfully',
             discountAmount,
             updatedCartValue,
+            status: 'success',
           });
         } else {
           let discountPercent = newCoupon.percentValue;
@@ -110,6 +131,7 @@ module.exports.validateCoupon = async (req, res) => {
             message: 'coupon code applied successfully',
             discountAmount,
             updatedCartValue,
+            status: 'success',
           });
         }
       }
@@ -118,14 +140,15 @@ module.exports.validateCoupon = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       message: 'Error while validating coupon',
-      error,
+      status: 'error',
     });
   }
 };
+// list all coupons controller
 module.exports.listCoupons = async (req, res) => {
   try {
     let coupons = await Coupon.find();
-    console.log(coupons);
+    // console.log(coupons);
     return res.status(200).json({
       message: 'coupons fetched successfully',
       coupons,
